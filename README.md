@@ -45,8 +45,10 @@ Missing photos just hide themselves — nothing breaks.
 ## 4. Add the song (when you have it)
 
 Put the audio file at **`assets/song.mp3`** (or change `songFile` in `CONFIG` to its path).
-A round ♪ button appears once a valid song loads; tap it to play/pause. (Phones block
-auto-play, so it's a deliberate tap — that's expected.)
+The song **starts playing automatically the moment she taps to open the envelope** (that tap
+counts as the user gesture browsers require, so it isn't blocked). A round ♪ button in the
+corner lets her **pause/resume**. If no song is added yet, nothing plays and the button stays
+hidden — the rest of the card works fine.
 
 ## 5. Preview it
 

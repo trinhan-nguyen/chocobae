@@ -330,7 +330,7 @@
 </section>
 
 <button id="music" aria-label="Play music" title="Play our song">♪</button>
-<audio id="audio" loop preload="none"></audio>
+<audio id="audio" loop preload="auto"></audio>
 <canvas id="confetti" aria-hidden="true"></canvas>
 
 <script>
@@ -480,16 +480,21 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 document.querySelectorAll(".memory").forEach(el => io.observe(el));
 
-/* ---- music: only show the button if a song actually loads ---- */
+/* ---- music: starts when she opens the card; button is for pause/resume ---- */
 const audio = document.getElementById("audio");
 const musicBtn = document.getElementById("music");
 let musicReady = false;
 audio.src = CONFIG.songFile;
-audio.addEventListener("canplay", () => { musicReady = true; });
+// once a real song is loadable, make sure the button is reachable after opening
+audio.addEventListener("canplay", () => { musicReady = true; if (opened) musicBtn.classList.add("show"); });
+
+function setPlaying(on) {
+  musicBtn.classList.toggle("playing", on);
+  musicBtn.setAttribute("aria-label", on ? "Pause music" : "Play music");
+}
 musicBtn.addEventListener("click", () => {
-  if (!musicReady) return;
-  if (audio.paused) { audio.play(); musicBtn.classList.add("playing"); musicBtn.setAttribute("aria-label","Pause music"); }
-  else { audio.pause(); musicBtn.classList.remove("playing"); musicBtn.setAttribute("aria-label","Play music"); }
+  if (audio.paused) audio.play().then(() => setPlaying(true)).catch(() => {});
+  else { audio.pause(); setPlaying(false); }
 });
 
 /* ---- the envelope opening ---- */
@@ -502,14 +507,17 @@ function openCard() {
   opened = true;
   envelope.classList.add("open");
   burst();
+  // start the song right here — this runs inside her tap, so the browser allows it.
+  // if a song isn't added yet (or autoplay is blocked), it just falls back to the button.
+  audio.play()
+    .then(() => { setPlaying(true); musicBtn.classList.add("show"); })
+    .catch(() => { if (musicReady) musicBtn.classList.add("show"); });
   // reveal content + scroll down to it after the envelope animation
   setTimeout(() => {
     content.classList.add("show");
     content.setAttribute("aria-hidden", "false");
     content.scrollIntoView({ behavior: "smooth", block: "start" });
     if (musicReady) musicBtn.classList.add("show");
-    // show the music button shortly after even if it loads late
-    setTimeout(() => { if (musicReady) musicBtn.classList.add("show"); }, 1200);
   }, 750);
 }
 envelope.addEventListener("click", openCard);

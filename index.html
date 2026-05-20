@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#b14a5e" />
+<meta name="theme-color" content="#9b7bc7" />
 <title>Happy Anniversary 💕</title>
 
 <!-- A single handwriting-ish + serif pairing. Falls back gracefully if offline. -->
@@ -13,14 +13,14 @@
 
 <style>
   :root {
-    --rose:   #b14a5e;
-    --rose-d: #8c374a;
-    --blush:  #f7e7e9;
-    --cream:  #fff8f3;
-    --ink:    #4a3338;
+    --rose:   #9b7bc7;
+    --rose-d: #6f5099;
+    --blush:  #ece6f6;
+    --cream:  #faf7ff;
+    --ink:    #443a52;
     --gold:   #c79a52;
-    --paper:  #fffdf9;
-    --shadow: rgba(90, 40, 50, 0.18);
+    --paper:  #fffdfb;
+    --shadow: rgba(80, 55, 120, 0.18);
     --serif:  "Cormorant Garamond", Georgia, "Times New Roman", serif;
     --script: "Dancing Script", "Segoe Script", cursive;
   }
@@ -33,8 +33,8 @@
     font-family: var(--serif);
     color: var(--ink);
     background:
-      radial-gradient(1200px 600px at 50% -10%, #ffeef0 0%, transparent 60%),
-      linear-gradient(160deg, #fdeef0 0%, #fbe6ea 40%, #f7dfe6 100%);
+      radial-gradient(1200px 600px at 50% -10%, #f4ecfb 0%, transparent 60%),
+      linear-gradient(160deg, #f3ecfb 0%, #ece2f6 40%, #e6daf4 100%);
     min-height: 100dvh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
@@ -92,7 +92,7 @@
 
   .env-body {
     position: absolute; inset: 0;
-    background: linear-gradient(135deg, #f3c0c9, #e79aa9);
+    background: linear-gradient(135deg, #d9c7ee, #c2a8e2);
     border-radius: 10px;
   }
   /* the two side triangles + bottom for depth */
@@ -102,9 +102,9 @@
   .env-pocket::before { /* bottom flap */
     content: ""; position: absolute; left: 0; right: 0; bottom: 0; top: 0;
     background:
-      linear-gradient(to top right, #eaa6b3 49.5%, transparent 50%) left bottom / 50% 100% no-repeat,
-      linear-gradient(to top left,  #eaa6b3 49.5%, transparent 50%) right bottom / 50% 100% no-repeat,
-      linear-gradient(#f0b3bf, #f0b3bf) center bottom / 100% 60% no-repeat;
+      linear-gradient(to top right, #c9b1e8 49.5%, transparent 50%) left bottom / 50% 100% no-repeat,
+      linear-gradient(to top left,  #c9b1e8 49.5%, transparent 50%) right bottom / 50% 100% no-repeat,
+      linear-gradient(#d4bfee, #d4bfee) center bottom / 100% 60% no-repeat;
   }
 
   /* the letter peeking/sliding out */
@@ -118,7 +118,7 @@
 
   .env-flap {
     position: absolute; left: 0; right: 0; top: 0; height: 58%;
-    background: linear-gradient(135deg, #e79aa9, #d97f91);
+    background: linear-gradient(135deg, #c2a8e2, #ad8fd6);
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: top center; z-index: 4;
     transition: transform .6s ease, z-index 0s .3s;
@@ -192,7 +192,7 @@
   .timeline { position: relative; padding-left: 26px; }
   .timeline::before {
     content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px;
-    width: 3px; background: linear-gradient(var(--rose), #f0b9c4);
+    width: 3px; background: linear-gradient(var(--rose), #d9c7ee);
     border-radius: 2px;
   }
   .memory {
@@ -207,10 +207,10 @@
     content: "♥"; position: absolute; left: -26px; top: 18px;
     color: var(--rose); font-size: 1rem;
     background: var(--cream); border-radius: 50%; width: 22px; height: 22px;
-    display: grid; place-items: center; box-shadow: 0 0 0 3px #f7dfe6;
+    display: grid; place-items: center; box-shadow: 0 0 0 3px #e6daf4;
   }
   .memory img {
-    display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #f3e3df;
+    display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #ece6f6;
   }
   .memory .m-text { padding: 16px 18px 20px; }
   .memory .m-date { font-size: .95rem; letter-spacing: .04em; color: var(--gold); font-weight: 600; text-transform: uppercase; }
@@ -430,7 +430,7 @@ function burst() {
   const DPR = window.devicePixelRatio || 1;
   cv.width = innerWidth * DPR; cv.height = innerHeight * DPR;
   ctx.scale(DPR, DPR);
-  const colors = ["#b14a5e", "#e79aa9", "#c79a52", "#f3c0c9", "#fff"];
+  const colors = ["#9b7bc7", "#c2a8e2", "#c79a52", "#d9c7ee", "#fff"];
   const parts = [];
   const cx = innerWidth / 2, cy = innerHeight / 2;
   for (let i = 0; i < 130; i++) {

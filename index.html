@@ -463,6 +463,12 @@ document.getElementById("sign").textContent       = "Yours.\n" + CONFIG.fromName
 /* ---- build the timeline ---- */
 (function buildTimeline() {
   const tl = document.getElementById("timeline");
+  // show months as 3-letter abbreviations (December -> Dec) while CONFIG keeps full names
+  const MON = { january:"Jan", february:"Feb", march:"Mar", april:"Apr", may:"May", june:"Jun",
+                july:"Jul", august:"Aug", september:"Sep", october:"Oct", november:"Nov", december:"Dec" };
+  const abbrevDate = s => (s || "").replace(
+    /january|february|march|april|may|june|july|august|september|october|november|december/gi,
+    m => MON[m.toLowerCase()]);
   CONFIG.memories.forEach(m => {
     // accepts photos: [...] (preferred) or a single photo: "..." (still works)
     const photos = (m.photos && m.photos.length) ? m.photos : (m.photo ? [m.photo] : []);
@@ -485,7 +491,7 @@ document.getElementById("sign").textContent       = "Yours.\n" + CONFIG.fromName
     }
 
     card.innerHTML = `
-      <div class="m-date">${m.date || ""}</div>
+      <div class="m-date">${abbrevDate(m.date)}</div>
       ${media}
       <div class="m-text">
         <div class="m-title">${m.title || ""}</div>

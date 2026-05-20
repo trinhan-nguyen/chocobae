@@ -244,9 +244,14 @@
     border: none; border-radius: 50%; cursor: pointer; z-index: 4;
     background: rgba(255,255,255,.85); color: var(--rose-d); font-size: 1.3rem; line-height: 1;
     box-shadow: 0 2px 8px var(--shadow); display: grid; place-items: center;
+    opacity: 1; transition: opacity .3s ease, transform .35s cubic-bezier(.2,.8,.2,1);
   }
   .nav.prev { left: 8px; } .nav.next { right: 8px; }
   .nav:active { transform: scale(.9); }
+  /* hidden at the ends of the strip — fades + slides away */
+  .nav.hide { opacity: 0; pointer-events: none; }
+  .nav.prev.hide { transform: translateX(-12px) scale(.6); }
+  .nav.next.hide { transform: translateX(12px) scale(.6); }
 
   .dots { display: flex; gap: 6px; justify-content: center; padding: 10px 0 2px; }
   .dots span { width: 7px; height: 7px; border-radius: 50%; background: #d9c7ee; transition: background .25s ease, transform .25s ease; }
@@ -490,10 +495,21 @@ document.getElementById("sign").textContent       = "Yours.\n" + CONFIG.fromName
     const next = wrap && wrap.querySelector(".nav.next");
     if (prev) prev.addEventListener("click", () => g.scrollBy({ left: -g.clientWidth, behavior: "smooth" }));
     if (next) next.addEventListener("click", () => g.scrollBy({ left:  g.clientWidth, behavior: "smooth" }));
-    if (dots) g.addEventListener("scroll", () => {
-      const idx = Math.round(g.scrollLeft / g.clientWidth);
-      dots.querySelectorAll("span").forEach((d, i) => d.classList.toggle("on", i === idx));
-    }, { passive: true });
+
+    function update() {
+      // hide the left arrow at the first photo, the right arrow at the last
+      const atStart = g.scrollLeft <= 2;
+      const atEnd = g.scrollLeft >= g.scrollWidth - g.clientWidth - 2;
+      if (prev) prev.classList.toggle("hide", atStart);
+      if (next) next.classList.toggle("hide", atEnd);
+      if (dots) {
+        const idx = Math.round(g.scrollLeft / g.clientWidth);
+        dots.querySelectorAll("span").forEach((d, i) => d.classList.toggle("on", i === idx));
+      }
+    }
+    g.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();   // initial state: left arrow starts hidden
   });
 })();
 

@@ -208,13 +208,35 @@
     color: var(--rose); font-size: 1rem;
     background: var(--cream); border-radius: 50%; width: 22px; height: 22px;
     display: grid; place-items: center; box-shadow: 0 0 0 3px #e6daf4;
+    z-index: 3;
   }
-  .memory img {
-    display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #ece6f6;
+  /* trips get a pin marker instead of a heart */
+  .memory.trip::before { content: "📍"; font-size: .85rem; }
+
+  /* text-only moment: a slim note, no card chrome (great for the early days) */
+  .memory.note { background: transparent; box-shadow: none; }
+  .memory.note::before { top: 6px; }
+  .memory.note .m-text { padding: 4px 2px 8px; }
+  .memory.note .m-title { font-size: 1.4rem; }
+
+  /* swipeable photo strip for trips */
+  .gallery {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
   }
+  .gallery::-webkit-scrollbar { display: none; }
+  .gallery img {
+    flex: 0 0 100%; scroll-snap-align: center; display: block;
+    width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #ece6f6;
+  }
+  .dots { display: flex; gap: 6px; justify-content: center; padding: 10px 0 2px; }
+  .dots span { width: 7px; height: 7px; border-radius: 50%; background: #d9c7ee; transition: background .25s ease, transform .25s ease; }
+  .dots span.on { background: var(--rose); transform: scale(1.35); }
+
   .memory .m-text { padding: 16px 18px 20px; }
   .memory .m-date { font-size: .95rem; letter-spacing: .04em; color: var(--gold); font-weight: 600; text-transform: uppercase; }
-  .memory .m-title { font-family: var(--script); font-size: 1.6rem; color: var(--rose-d); line-height: 1.1; margin: 2px 0 6px; }
+  .memory .m-title { font-family: var(--script); font-size: 1.6rem; color: var(--rose-d); line-height: 1.1; margin: 2px 0 4px; }
+  .memory .m-place { font-size: 1rem; color: var(--rose); font-weight: 600; margin-bottom: 6px; }
   .memory .m-body { font-size: 1.12rem; line-height: 1.55; }
 
   footer {
@@ -314,13 +336,25 @@ Here's to us — and to all the years still ahead.`,
   // The song — drop a file at assets/song.mp3 later (or change the path).
   songFile: "assets/song.mp3",
 
-  // Your memories. Add/remove entries freely. photo is optional.
-  // Put photos in assets/photos/ and reference them here.
+  // Your memories. Add/remove entries freely — each one can be:
+  //   • a simple text "moment" (no photos)  -> shows as a slim note. Perfect for the early days.
+  //   • add  place: "..."                   -> marks it as a trip (📍 pin + the location).
+  //   • add  photos: ["...", "..."]         -> 1 photo = a single card, 2+ = a swipeable strip.
+  // Put photo files in assets/photos/ and reference them by path here.
   memories: [
-    { date: "May 2024",  title: "Where it all began", text: "The day I knew you were something special.", photo: "assets/photos/1.jpg" },
-    { date: "Aug 2024",  title: "Our first trip",      text: "Getting lost together and not minding one bit.", photo: "assets/photos/2.jpg" },
-    { date: "Dec 2024",  title: "First holidays",       text: "Cold outside, warm everywhere it counted.",      photo: "assets/photos/3.jpg" },
-    { date: "May 2026",  title: "Today",                text: "Still choosing you. Always will.",               photo: "assets/photos/4.jpg" },
+    { date: "May 2024", title: "Where it all began",
+      text: "The day I knew you were something special." },                         // no photo -> slim note
+    { date: "Aug 2024", title: "Our first trip", place: "Da Lat",
+      text: "Getting lost together and not minding one bit.",
+      photos: ["assets/photos/dalat-1.jpg", "assets/photos/dalat-2.jpg", "assets/photos/dalat-3.jpg"] },
+    { date: "Dec 2024", title: "First holidays together",
+      text: "Cold outside, warm everywhere it counted." },                          // no photo -> slim note
+    { date: "Mar 2026", title: "Beach getaway", place: "Da Nang",
+      text: "Sun, salt, and you.",
+      photos: ["assets/photos/danang-1.jpg", "assets/photos/danang-2.jpg"] },
+    { date: "May 2026", title: "Today",
+      text: "Still choosing you. Always will.",
+      photos: ["assets/photos/today.jpg"] },
   ],
 };
 /* =======================================================================
@@ -356,19 +390,41 @@ document.getElementById("sign").textContent       = "Forever yours,\n" + CONFIG.
 (function buildTimeline() {
   const tl = document.getElementById("timeline");
   CONFIG.memories.forEach(m => {
+    // accepts photos: [...] (preferred) or a single photo: "..." (still works)
+    const photos = (m.photos && m.photos.length) ? m.photos : (m.photo ? [m.photo] : []);
+    const isTrip = !!m.place;
     const card = document.createElement("div");
-    card.className = "memory";
-    const img = m.photo
-      ? `<img src="${m.photo}" alt="${m.title}" loading="lazy" onerror="this.style.display='none'">`
-      : "";
+    card.className = "memory" + (photos.length ? "" : " note") + (isTrip ? " trip" : "");
+
+    let media = "";
+    if (photos.length) {
+      const imgs = photos.map(src =>
+        `<img src="${src}" alt="${m.title || ""}" loading="lazy" onerror="this.remove()">`).join("");
+      const dots = photos.length > 1
+        ? `<div class="dots">${photos.map((_, i) => `<span class="${i === 0 ? "on" : ""}"></span>`).join("")}</div>`
+        : "";
+      media = `<div class="gallery">${imgs}</div>${dots}`;
+    }
+
     card.innerHTML = `
-      ${img}
+      ${media}
       <div class="m-text">
         <div class="m-date">${m.date || ""}</div>
         <div class="m-title">${m.title || ""}</div>
+        ${m.place ? `<div class="m-place">${m.place}</div>` : ""}
         <div class="m-body">${m.text || ""}</div>
       </div>`;
     tl.appendChild(card);
+  });
+
+  // light up the right dot as you swipe a trip's photo strip
+  document.querySelectorAll(".gallery").forEach(g => {
+    const dots = g.parentElement.querySelector(".dots");
+    if (!dots) return;
+    g.addEventListener("scroll", () => {
+      const idx = Math.round(g.scrollLeft / g.clientWidth);
+      dots.querySelectorAll("span").forEach((d, i) => d.classList.toggle("on", i === idx));
+    }, { passive: true });
   });
 })();
 

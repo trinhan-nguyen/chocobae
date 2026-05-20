@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#b14a5e" />
+<title>Happy Anniversary 💕</title>
+
+<!-- A single handwriting-ish + serif pairing. Falls back gracefully if offline. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --rose:   #b14a5e;
+    --rose-d: #8c374a;
+    --blush:  #f7e7e9;
+    --cream:  #fff8f3;
+    --ink:    #4a3338;
+    --gold:   #c79a52;
+    --paper:  #fffdf9;
+    --shadow: rgba(90, 40, 50, 0.18);
+    --serif:  "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --script: "Dancing Script", "Segoe Script", cursive;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--serif);
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #ffeef0 0%, transparent 60%),
+      linear-gradient(160deg, #fdeef0 0%, #fbe6ea 40%, #f7dfe6 100%);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Floating hearts background layer */
+  #hearts {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .bg-heart {
+    position: absolute; bottom: -40px;
+    font-size: 1.2rem; opacity: 0;
+    animation: rise linear infinite;
+    will-change: transform, opacity;
+  }
+  @keyframes rise {
+    0%   { transform: translateY(0) rotate(0deg) scale(.8); opacity: 0; }
+    10%  { opacity: .55; }
+    90%  { opacity: .35; }
+    100% { transform: translateY(-110dvh) rotate(40deg) scale(1.1); opacity: 0; }
+  }
+
+  /* ---------- ENVELOPE ---------- */
+  #stage {
+    position: relative; z-index: 1;
+    min-height: 100dvh;
+    display: grid; place-items: center;
+    padding: 24px;
+  }
+
+  .envelope-wrap {
+    text-align: center;
+    animation: floatIn .9s ease both;
+  }
+  @keyframes floatIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+  .tap-hint {
+    font-family: var(--script);
+    font-size: 1.5rem; color: var(--rose-d);
+    margin-bottom: 18px;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+
+  .envelope {
+    --w: min(86vw, 360px);
+    width: var(--w); height: calc(var(--w) * 0.66);
+    position: relative; margin: 0 auto;
+    cursor: pointer; user-select: none;
+    filter: drop-shadow(0 18px 30px var(--shadow));
+    transition: transform .4s ease;
+  }
+  .envelope:active { transform: scale(.98); }
+
+  .env-body {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #f3c0c9, #e79aa9);
+    border-radius: 10px;
+  }
+  /* the two side triangles + bottom for depth */
+  .env-pocket {
+    position: absolute; inset: 0; border-radius: 10px; overflow: hidden;
+  }
+  .env-pocket::before { /* bottom flap */
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; top: 0;
+    background:
+      linear-gradient(to top right, #eaa6b3 49.5%, transparent 50%) left bottom / 50% 100% no-repeat,
+      linear-gradient(to top left,  #eaa6b3 49.5%, transparent 50%) right bottom / 50% 100% no-repeat,
+      linear-gradient(#f0b3bf, #f0b3bf) center bottom / 100% 60% no-repeat;
+  }
+
+  /* the letter peeking/sliding out */
+  .letter-peek {
+    position: absolute; left: 6%; right: 6%; bottom: 8%;
+    height: 78%; background: var(--paper);
+    border-radius: 6px 6px 2px 2px;
+    box-shadow: 0 6px 14px rgba(0,0,0,.12);
+    z-index: 2; transition: transform .7s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .env-flap {
+    position: absolute; left: 0; right: 0; top: 0; height: 58%;
+    background: linear-gradient(135deg, #e79aa9, #d97f91);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center; z-index: 4;
+    transition: transform .6s ease, z-index 0s .3s;
+    border-radius: 10px 10px 0 0;
+  }
+  .seal {
+    position: absolute; top: 34%; left: 50%; transform: translate(-50%,-50%);
+    width: 58px; height: 58px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d8a85f, var(--gold));
+    box-shadow: 0 4px 10px rgba(120,80,20,.45), inset 0 -3px 6px rgba(0,0,0,.25);
+    z-index: 5; display: grid; place-items: center;
+    font-family: var(--serif); font-weight: 600; font-size: 1.6rem; color: #5a3c12;
+    transition: opacity .35s ease, transform .35s ease;
+  }
+
+  /* opened state */
+  .envelope.open .env-flap   { transform: rotateX(180deg); z-index: 1; }
+  .envelope.open .seal       { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+  .envelope.open .letter-peek{ transform: translateY(-115%) scale(1.02); }
+
+  /* ---------- LETTER + CONTENT (revealed after open) ---------- */
+  #content {
+    position: relative; z-index: 1;
+    max-width: 640px; margin: 0 auto;
+    padding: 0 20px 90px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .8s ease;
+  }
+  #content.show { opacity: 1; pointer-events: auto; }
+
+  .letter {
+    background: var(--paper);
+    border: 1px solid #f0e2d8;
+    border-radius: 14px;
+    padding: 34px 28px;
+    box-shadow: 0 16px 40px var(--shadow);
+    margin-top: 8px;
+    position: relative;
+  }
+  .letter::before {
+    content: "💌"; position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+    font-size: 2.4rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,.15));
+  }
+  .letter h1 {
+    font-family: var(--script); font-weight: 700;
+    font-size: clamp(2rem, 8vw, 3rem); color: var(--rose-d);
+    text-align: center; line-height: 1.05; margin-bottom: 6px;
+  }
+  .letter .sub {
+    text-align: center; font-style: italic; color: var(--rose);
+    font-size: 1.15rem; margin-bottom: 22px;
+  }
+  .letter .greeting {
+    font-family: var(--script); font-size: 1.6rem; color: var(--ink); margin-bottom: 10px;
+  }
+  .letter p.body {
+    font-size: 1.25rem; line-height: 1.7; white-space: pre-line; color: var(--ink);
+  }
+  .letter .sign {
+    font-family: var(--script); font-size: 1.5rem; color: var(--rose-d);
+    text-align: right; margin-top: 18px;
+  }
+
+  .section-title {
+    text-align: center; font-family: var(--script);
+    font-size: clamp(1.8rem, 7vw, 2.4rem); color: var(--rose-d);
+    margin: 54px 0 26px;
+  }
+
+  /* timeline */
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px;
+    width: 3px; background: linear-gradient(var(--rose), #f0b9c4);
+    border-radius: 2px;
+  }
+  .memory {
+    position: relative; margin-bottom: 30px;
+    background: var(--paper); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 10px 26px var(--shadow);
+    opacity: 0; transform: translateY(26px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .memory.in { opacity: 1; transform: none; }
+  .memory::before {
+    content: "♥"; position: absolute; left: -26px; top: 18px;
+    color: var(--rose); font-size: 1rem;
+    background: var(--cream); border-radius: 50%; width: 22px; height: 22px;
+    display: grid; place-items: center; box-shadow: 0 0 0 3px #f7dfe6;
+  }
+  .memory img {
+    display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #f3e3df;
+  }
+  .memory .m-text { padding: 16px 18px 20px; }
+  .memory .m-date { font-size: .95rem; letter-spacing: .04em; color: var(--gold); font-weight: 600; text-transform: uppercase; }
+  .memory .m-title { font-family: var(--script); font-size: 1.6rem; color: var(--rose-d); line-height: 1.1; margin: 2px 0 6px; }
+  .memory .m-body { font-size: 1.12rem; line-height: 1.55; }
+
+  footer {
+    text-align: center; margin-top: 56px;
+  }
+  footer .big {
+    font-family: var(--script); font-size: clamp(1.8rem, 7vw, 2.4rem); color: var(--rose-d);
+  }
+  footer .counter {
+    margin-top: 10px; font-size: 1.2rem; color: var(--rose);
+  }
+  footer .counter b { font-size: 1.6rem; }
+
+  /* music button */
+  #music {
+    position: fixed; right: 16px; bottom: 16px; z-index: 20;
+    width: 56px; height: 56px; border-radius: 50%; border: none;
+    background: var(--rose); color: #fff; font-size: 1.4rem;
+    box-shadow: 0 8px 20px var(--shadow); cursor: pointer;
+    display: none; place-items: center;
+    transition: transform .2s ease, background .2s ease;
+  }
+  #music.show { display: grid; }
+  #music:active { transform: scale(.92); }
+  #music.playing { background: var(--rose-d); animation: spin 4s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* confetti canvas */
+  #confetti { position: fixed; inset: 0; z-index: 15; pointer-events: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition-duration: .001s !important; scroll-behavior: auto; }
+    .bg-heart { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="hearts" aria-hidden="true"></div>
+
+<!-- Envelope -->
+<main id="stage">
+  <div class="envelope-wrap">
+    <div class="tap-hint">tap to open ♥</div>
+    <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Open your card">
+      <div class="env-body"></div>
+      <div class="letter-peek"></div>
+      <div class="env-pocket"></div>
+      <div class="env-flap"></div>
+      <div class="seal" id="seal">2</div>
+    </div>
+  </div>
+</main>
+
+<!-- The card content, revealed after the envelope opens -->
+<section id="content" aria-hidden="true">
+  <article class="letter">
+    <h1 id="headline"></h1>
+    <p class="sub" id="subhead"></p>
+    <p class="greeting" id="greeting"></p>
+    <p class="body" id="letterBody"></p>
+    <p class="sign" id="sign"></p>
+  </article>
+
+  <h2 class="section-title">our two years ♡</h2>
+  <div class="timeline" id="timeline"></div>
+
+  <footer>
+    <div class="big">Happy 2 Years 💞</div>
+    <div class="counter" id="counter"></div>
+  </footer>
+</section>
+
+<button id="music" aria-label="Play music" title="Play our song">♪</button>
+<audio id="audio" loop preload="none"></audio>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+/* =======================================================================
+   ✏️  EDIT EVERYTHING IN THIS BLOCK — this is the only part you change.
+   ======================================================================= */
+const CONFIG = {
+  herName: "Chocobae",                      // her name / nickname
+  fromName: "Em bé bồ",                     // your name / how you sign off
+  anniversaryDate: "2024-05-20",            // the day you got together (YYYY-MM-DD) — for the counter
+
+  // Your letter. Write whatever you want; line breaks are kept.
+  headline: "Happy Anniversary",
+  subhead: "two years of us",
+  letterText:
+`Two years ago today, my whole world got a little brighter.
+
+Thank you for every laugh, every late-night talk, and every ordinary day made better just because you were in it.
+
+Here's to us — and to all the years still ahead.`,
+
+  // The song — drop a file at assets/song.mp3 later (or change the path).
+  songFile: "assets/song.mp3",
+
+  // Your memories. Add/remove entries freely. photo is optional.
+  // Put photos in assets/photos/ and reference them here.
+  memories: [
+    { date: "May 2024",  title: "Where it all began", text: "The day I knew you were something special.", photo: "assets/photos/1.jpg" },
+    { date: "Aug 2024",  title: "Our first trip",      text: "Getting lost together and not minding one bit.", photo: "assets/photos/2.jpg" },
+    { date: "Dec 2024",  title: "First holidays",       text: "Cold outside, warm everywhere it counted.",      photo: "assets/photos/3.jpg" },
+    { date: "May 2026",  title: "Today",                text: "Still choosing you. Always will.",               photo: "assets/photos/4.jpg" },
+  ],
+};
+/* =======================================================================
+   ✏️  END OF EDIT BLOCK — you don't need to touch anything below.
+   ======================================================================= */
+
+
+/* ---- floating background hearts ---- */
+(function makeHearts() {
+  const layer = document.getElementById("hearts");
+  const glyphs = ["♥", "💕", "🤍", "💗"];
+  const N = 14;
+  for (let i = 0; i < N; i++) {
+    const h = document.createElement("span");
+    h.className = "bg-heart";
+    h.textContent = glyphs[i % glyphs.length];
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.fontSize = (0.9 + Math.random() * 1.6) + "rem";
+    h.style.animationDuration = (9 + Math.random() * 10) + "s";
+    h.style.animationDelay = (-Math.random() * 12) + "s";
+    layer.appendChild(h);
+  }
+})();
+
+/* ---- populate the letter ---- */
+document.getElementById("headline").textContent  = CONFIG.headline;
+document.getElementById("subhead").textContent   = CONFIG.subhead;
+document.getElementById("greeting").textContent  = "Dear " + CONFIG.herName + ",";
+document.getElementById("letterBody").textContent = CONFIG.letterText;
+document.getElementById("sign").textContent       = "Forever yours,\n" + CONFIG.fromName;
+
+/* ---- build the timeline ---- */
+(function buildTimeline() {
+  const tl = document.getElementById("timeline");
+  CONFIG.memories.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "memory";
+    const img = m.photo
+      ? `<img src="${m.photo}" alt="${m.title}" loading="lazy" onerror="this.style.display='none'">`
+      : "";
+    card.innerHTML = `
+      ${img}
+      <div class="m-text">
+        <div class="m-date">${m.date || ""}</div>
+        <div class="m-title">${m.title || ""}</div>
+        <div class="m-body">${m.text || ""}</div>
+      </div>`;
+    tl.appendChild(card);
+  });
+})();
+
+/* ---- days-together counter ---- */
+(function counter() {
+  const start = new Date(CONFIG.anniversaryDate);
+  if (isNaN(start)) return;
+  const days = Math.max(0, Math.floor((Date.now() - start) / 86400000));
+  document.getElementById("counter").innerHTML =
+    `That's <b>${days.toLocaleString()}</b> days of you and me 💗`;
+})();
+
+/* ---- reveal timeline cards on scroll ---- */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll(".memory").forEach(el => io.observe(el));
+
+/* ---- music: only show the button if a song actually loads ---- */
+const audio = document.getElementById("audio");
+const musicBtn = document.getElementById("music");
+let musicReady = false;
+audio.src = CONFIG.songFile;
+audio.addEventListener("canplay", () => { musicReady = true; });
+musicBtn.addEventListener("click", () => {
+  if (!musicReady) return;
+  if (audio.paused) { audio.play(); musicBtn.classList.add("playing"); musicBtn.setAttribute("aria-label","Pause music"); }
+  else { audio.pause(); musicBtn.classList.remove("playing"); musicBtn.setAttribute("aria-label","Play music"); }
+});
+
+/* ---- the envelope opening ---- */
+const envelope = document.getElementById("envelope");
+const content = document.getElementById("content");
+let opened = false;
+
+function openCard() {
+  if (opened) return;
+  opened = true;
+  envelope.classList.add("open");
+  burst();
+  // reveal content + scroll down to it after the envelope animation
+  setTimeout(() => {
+    content.classList.add("show");
+    content.setAttribute("aria-hidden", "false");
+    content.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (musicReady) musicBtn.classList.add("show");
+    // show the music button shortly after even if it loads late
+    setTimeout(() => { if (musicReady) musicBtn.classList.add("show"); }, 1200);
+  }, 750);
+}
+envelope.addEventListener("click", openCard);
+envelope.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCard(); } });
+
+/* ---- confetti / heart burst ---- */
+function burst() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = document.getElementById("confetti");
+  const ctx = cv.getContext("2d");
+  const DPR = window.devicePixelRatio || 1;
+  cv.width = innerWidth * DPR; cv.height = innerHeight * DPR;
+  ctx.scale(DPR, DPR);
+  const colors = ["#b14a5e", "#e79aa9", "#c79a52", "#f3c0c9", "#fff"];
+  const parts = [];
+  const cx = innerWidth / 2, cy = innerHeight / 2;
+  for (let i = 0; i < 130; i++) {
+    const a = Math.random() * Math.PI * 2, sp = 3 + Math.random() * 7;
+    parts.push({
+      x: cx, y: cy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 3,
+      g: 0.12 + Math.random() * 0.1, size: 5 + Math.random() * 7,
+      rot: Math.random() * 6, vr: (Math.random() - .5) * .3,
+      color: colors[(Math.random() * colors.length) | 0], life: 1,
+      heart: Math.random() < 0.4,
+    });
+  }
+  let frames = 0;
+  (function anim() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    parts.forEach(p => {
+      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 0.006;
+      ctx.save(); ctx.globalAlpha = Math.max(0, p.life);
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.color;
+      if (p.heart) { ctx.font = p.size * 2 + "px serif"; ctx.fillText("♥", -p.size, p.size); }
+      else { ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6); }
+      ctx.restore();
+    });
+    frames++;
+    if (frames < 220) requestAnimationFrame(anim);
+    else ctx.clearRect(0, 0, cv.width, cv.height);
+  })();
+}
+</script>
+</body>
+</html>

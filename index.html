@@ -191,9 +191,11 @@
   /* timeline */
   .timeline {
     position: relative;
-    --date-w: 106px;       /* width of the date column on the left */
-    --bar-x: 126px;        /* the vertical bar's distance from the left */
-    --content-x: 146px;    /* where the cards begin */
+    /* responsive widths; bar + content are derived from the date column so the
+       gap between the date and the marker is always guaranteed (no overlap) */
+    --date-w: clamp(84px, 22vw, 118px);   /* width of the date column on the left */
+    --bar-x: calc(var(--date-w) + 18px);  /* the vertical bar's distance from the left */
+    --content-x: calc(var(--bar-x) + 22px); /* where the cards begin */
     padding-left: var(--content-x);
   }
   .timeline::before {
@@ -221,13 +223,12 @@
   /* the date, sitting in the left column beside the spine */
   .memory .m-date {
     position: absolute; left: calc(-1 * var(--content-x)); width: var(--date-w); top: 13px;
-    text-align: right; line-height: 1.28; white-space: nowrap;
-    font-size: .92rem; letter-spacing: .01em; color: var(--gold);
+    text-align: right; line-height: 1.25; overflow-wrap: break-word;
+    font-size: clamp(.8rem, 3.3vw, .95rem); letter-spacing: .01em; color: var(--gold);
     font-weight: 700; text-transform: uppercase;
     opacity: 0; transform: translateX(-12px);
     transition: opacity .6s ease .15s, transform .6s cubic-bezier(.2,.8,.2,1) .15s;
   }
-  .memory .m-date.wrap { white-space: normal; overflow-wrap: break-word; }
   .memory.in .m-date { opacity: 1; transform: none; }
   .memory.note .m-date { top: 4px; }
   /* trips get a pin marker instead of a heart */
@@ -484,7 +485,7 @@ document.getElementById("sign").textContent       = "Yours.\n" + CONFIG.fromName
     }
 
     card.innerHTML = `
-      <div class="m-date${(m.date || "").length > 16 ? " wrap" : ""}">${m.date || ""}</div>
+      <div class="m-date">${m.date || ""}</div>
       ${media}
       <div class="m-text">
         <div class="m-title">${m.title || ""}</div>
